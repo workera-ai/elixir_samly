@@ -1,5 +1,13 @@
 # CHANGELOG
 
+### v1.1.0
++   Updated minor version due to dependency updates requiring potential language version bumps
++   Removed Inch CI
++   Updated dependencies for project
++   Removed strict required dependency on `sweet_xml`
++   Use updated version of `esaml` to reduce strict requirements on `cowboy`
++   Updated license copyright
+
 ### v1.0.0
 
 +   `target_url` query parameter for the sign-in/sign-out requests must be
