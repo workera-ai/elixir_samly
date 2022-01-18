@@ -150,7 +150,7 @@ in this model look different.
 #### Target URL for Sign-In and Sign-Out Actions
 
 The sign-in and sign-out URLs (HTTP GET) mentioned above optionally take a `target_url`
-query parameter. `Samly` will redirect the browser to these URLs upon successfuly
+query parameter. `Samly` will redirect the browser to these URLs upon successfully
 completing the sign-in/sign-out operations initiated from your application.
 
 > This `target_url` query parameter value must be `x-www-form-urlencoded`.
@@ -366,7 +366,7 @@ in `Samly.Subject.in_response_to` field. It is the responsibility of the consumi
     expects the SAML reqsponses to be signed (both assertion and envelopes). If your IdP is
     not configured to sign, you will have to explicitly turn them off in the configuration.
     It is highly recommended to turn signing on in production deployments.
-+   Encypted Assertions are supported in `Samly`. There are no explicit config settings for this. Decryption happens automatically when encrypted assertions are detected in the SAML response.
++   Encrypted Assertions are supported in `Samly`. There are no explicit config settings for this. Decryption happens automatically when encrypted assertions are detected in the SAML response.
     > [Supported Encryption algorithms](https://github.com/dropbox/esaml#assertion-encryption)
 +   Make sure to use HTTPS URLs in production deployments.
 
