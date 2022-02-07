@@ -44,6 +44,13 @@ defmodule SamlyIdpDataTest do
     metadata_file: "test/data/idp_metadata.xml"
   }
 
+  @idp_config3 %{
+    id: "idp3",
+    sp_id: "sp2",
+    base_url: "http://samly.howto:4003/sso",
+    metadata: File.read!("test/data/idp_metadata.xml")
+  }
+
   setup context do
     sp_data1 = SpData.load_provider(@sp_config1)
     sp_data2 = SpData.load_provider(@sp_config2)
@@ -189,6 +196,13 @@ defmodule SamlyIdpDataTest do
 
   test "sp entity_id test-1", %{sps: sps} do
     %IdpData{} = idp_data = IdpData.load_provider(@idp_config2, sps)
+    assert idp_data.valid?
+    Esaml.esaml_sp(entity_id: entity_id) = idp_data.esaml_sp_rec
+    assert entity_id == :undefined
+  end
+
+  test "metadata supplied inline rather than as file", %{sps: sps} do
+    %IdpData{} = idp_data = IdpData.load_provider(@idp_config3, sps)
     assert idp_data.valid?
     Esaml.esaml_sp(entity_id: entity_id) = idp_data.esaml_sp_rec
     assert entity_id == :undefined

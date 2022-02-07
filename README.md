@@ -211,7 +211,8 @@ config :samly, Samly.Provider,
 | `id` | _(mandatory)_ This will be the idp_id in the URLs |
 | `sp_id` | _(mandatory)_ The service provider definition to be used with this Identity Provider definition |
 | `base_url` | _(optional)_ If missing `Samly` will use the current URL to derive this. It is better to define this in production deployment. |
-| `metadata_file` | _(mandatory)_ Path to the IdP metadata XML file obtained from the Identity Provider. |
+| `metadata_file` | _(mandatory if `metadata` is not set)_ Path to the IdP metadata XML file obtained from the Identity Provider. This will be ignored if `metadata` is non-nil. |
+| `metadata` | _(mandatory if `metadata_file` is not set))_ String containing IdP metadata XML obtained from the Identity Provider. |
 | `pre_session_create_pipeline` | _(optional)_ Check the customization section. |
 | `use_redirect_for_req` | _(optional)_ Default is `false`. When this is `false`, `Samly` will POST to the IdP SAML endpoints. |
 | `sign_requests`, `sign_metadata` | _(optional)_ Default is `true`. |

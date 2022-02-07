@@ -14,6 +14,7 @@ defmodule Samly.IdpData do
             sp_id: "",
             base_url: nil,
             metadata_file: nil,
+            metadata: nil,
             pre_session_create_pipeline: nil,
             use_redirect_for_req: false,
             sign_requests: true,
@@ -40,6 +41,7 @@ defmodule Samly.IdpData do
           sp_id: binary(),
           base_url: nil | binary(),
           metadata_file: nil | binary(),
+          metadata: nil | binary(),
           pre_session_create_pipeline: nil | module(),
           use_redirect_for_req: boolean(),
           sign_requests: boolean(),
@@ -99,7 +101,7 @@ defmodule Samly.IdpData do
   def load_provider(idp_config, service_providers) do
     %IdpData{}
     |> save_idp_config(idp_config)
-    |> load_metadata(idp_config)
+    |> load_metadata()
     |> override_nameid_format(idp_config)
     |> update_esaml_recs(service_providers, idp_config)
     |> verify_slo_url()
@@ -109,7 +111,7 @@ defmodule Samly.IdpData do
   defp save_idp_config(idp_data, %{id: id, sp_id: sp_id} = opts_map)
        when is_binary(id) and is_binary(sp_id) do
     %IdpData{idp_data | id: id, sp_id: sp_id, base_url: Map.get(opts_map, :base_url)}
-    |> set_metadata_file(opts_map)
+    |> set_metadata(opts_map)
     |> set_pipeline(opts_map)
     |> set_allowed_target_urls(opts_map)
     |> set_boolean_attr(opts_map, :use_redirect_for_req)
@@ -120,26 +122,42 @@ defmodule Samly.IdpData do
     |> set_boolean_attr(opts_map, :allow_idp_initiated_flow)
   end
 
-  @spec load_metadata(%IdpData{}, map()) :: %IdpData{}
-  defp load_metadata(idp_data, _opts_map) do
-    with {:reading, {:ok, raw_xml}} <- {:reading, File.read(idp_data.metadata_file)},
-         {:parsing, {:ok, idp_data}} <- {:parsing, from_xml(raw_xml, idp_data)} do
-      idp_data
-    else
-      {:reading, {:error, reason}} ->
+  @spec load_metadata(%IdpData{}) :: %IdpData{}
+  defp load_metadata(idp_data = %IdpData{metadata: metadata}) when not is_nil(metadata) do
+    case from_xml(metadata, idp_data) do
+      {:ok, idp_data} ->
+        idp_data
+
+      {:error, reason} ->
+        Logger.error(
+          "[Samly] Invalid metadata_file content [#{inspect(idp_data.metadata)}]: #{inspect(reason)}"
+        )
+
+        idp_data
+    end
+  end
+
+  defp load_metadata(idp_data = %IdpData{metadata_file: metadata_file})
+       when not is_nil(metadata_file) do
+    case File.read(idp_data.metadata_file) do
+      {:ok, metadata} ->
+        load_metadata(%{idp_data | metadata: metadata})
+
+      {:error, reason} ->
         Logger.error(
           "[Samly] Failed to read metadata_file [#{inspect(idp_data.metadata_file)}]: #{inspect(reason)}"
         )
 
         idp_data
-
-      {:parsing, {:error, reason}} ->
-        Logger.error(
-          "[Samly] Invalid metadata_file content [#{inspect(idp_data.metadata_file)}]: #{inspect(reason)}"
-        )
-
-        idp_data
     end
+  end
+
+  defp load_metadata(idp_data) do
+    Logger.error(
+      "[Samly] Either `metadata` or `metadata_file` must be specified in the IdP configuration"
+    )
+
+    idp_data
   end
 
   @spec update_esaml_recs(%IdpData{}, %{required(id()) => %SpData{}}, map()) :: %IdpData{}
@@ -178,9 +196,13 @@ defmodule Samly.IdpData do
 
   @default_metadata_file "idp_metadata.xml"
 
-  @spec set_metadata_file(%IdpData{}, map()) :: %IdpData{}
-  defp set_metadata_file(%IdpData{} = idp_data, %{} = opts_map) do
-    %IdpData{idp_data | metadata_file: Map.get(opts_map, :metadata_file, @default_metadata_file)}
+  @spec set_metadata(%IdpData{}, map()) :: %IdpData{}
+  defp set_metadata(%IdpData{} = idp_data, %{} = opts_map) do
+    %IdpData{
+      idp_data
+      | metadata_file: Map.get(opts_map, :metadata_file, @default_metadata_file),
+        metadata: opts_map[:metadata]
+    }
   end
 
   @spec set_pipeline(%IdpData{}, map()) :: %IdpData{}
