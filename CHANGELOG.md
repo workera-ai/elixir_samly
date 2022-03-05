@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v1.2.0
++   Metadata can be specified directly in the IdP config rather than requiring a file
++   Bumps dependencies
+
 ### v1.1.0
 +   Updated minor version due to dependency updates requiring potential language version bumps
 +   Removed Inch CI
