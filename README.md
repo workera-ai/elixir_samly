@@ -11,6 +11,7 @@ This has been used in the wild with the following Identity Providers:
 + Nexus GO
 + Shibboleth
 + SimpleSAMLphp
++ Google
 
 This library uses Erlang [`esaml`](https://github.com/dropbox/esaml) to provide plug enabled routes.
 
