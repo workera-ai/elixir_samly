@@ -60,6 +60,10 @@ defmodule Samly.Provider do
     refresh_providers()
   end
 
+  @doc """
+  Refresh the provider configuration, allowing runtime-configuration to be applied after
+  application start.
+  """
   def refresh_providers do
     opts = Application.get_env(:samly, Samly.Provider, [])
 
