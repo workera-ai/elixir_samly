@@ -57,6 +57,16 @@ defmodule Samly.Provider do
 
     Application.put_env(:samly, :idp_id_from, idp_id_from)
 
+    refresh_providers()
+  end
+
+  @doc """
+  Refresh the provider configuration, allowing runtime-configuration to be applied after
+  application start.
+  """
+  def refresh_providers do
+    opts = Application.get_env(:samly, Samly.Provider, [])
+
     service_providers = Samly.SpData.load_providers(opts[:service_providers] || [])
 
     identity_providers =
