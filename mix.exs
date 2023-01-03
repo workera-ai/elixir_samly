@@ -1,7 +1,7 @@
 defmodule Samly.Mixfile do
   use Mix.Project
 
-  @version "1.2.0"
+  @version "1.3.0"
   @description "SAML Single-Sign-On Authentication for Plug/Phoenix Applications"
   @source_url "https://github.com/dropbox/samly"
 
@@ -31,6 +31,7 @@ defmodule Samly.Mixfile do
       {:plug, "~> 1.6"},
       {:esaml, "~> 4.3"},
       {:sweet_xml, "~> 0.6"},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end

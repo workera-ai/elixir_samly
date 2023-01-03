@@ -123,19 +123,8 @@ defmodule Samly.IdpData do
   end
 
   @spec load_metadata(%IdpData{}) :: %IdpData{}
-  defp load_metadata(idp_data = %IdpData{metadata: metadata}) when not is_nil(metadata) do
-    case from_xml(metadata, idp_data) do
-      {:ok, idp_data} ->
-        idp_data
-
-      {:error, reason} ->
-        Logger.error(
-          "[Samly] Invalid metadata_file content [#{inspect(idp_data.metadata)}]: #{inspect(reason)}"
-        )
-
-        idp_data
-    end
-  end
+  defp load_metadata(idp_data = %IdpData{metadata: metadata}) when not is_nil(metadata),
+    do: from_xml(metadata, idp_data)
 
   defp load_metadata(idp_data = %IdpData{metadata_file: metadata_file})
        when not is_nil(metadata_file) do
@@ -267,8 +256,8 @@ defmodule Samly.IdpData do
     if is_boolean(v), do: Map.put(idp_data, attr_name, v), else: idp_data
   end
 
-  @spec from_xml(binary, %IdpData{}) :: {:ok, %IdpData{}}
-  def from_xml(metadata_xml, idp_data) when is_binary(metadata_xml) do
+  @spec from_xml(binary, %IdpData{}) :: %IdpData{}
+  defp from_xml(metadata_xml, idp_data) when is_binary(metadata_xml) do
     xml_opts = [
       space: :normalize,
       namespace_conformant: true,
@@ -279,19 +268,18 @@ defmodule Samly.IdpData do
     md_xml = SweetXml.parse(metadata_xml, xml_opts)
     signing_certs = get_signing_certs(md_xml)
 
-    {:ok,
-     %IdpData{
-       idp_data
-       | entity_id: get_entity_id(md_xml),
-         signed_requests: get_req_signed(md_xml),
-         certs: signing_certs,
-         fingerprints: idp_cert_fingerprints(signing_certs),
-         sso_redirect_url: get_sso_redirect_url(md_xml),
-         sso_post_url: get_sso_post_url(md_xml),
-         slo_redirect_url: get_slo_redirect_url(md_xml),
-         slo_post_url: get_slo_post_url(md_xml),
-         nameid_format: get_nameid_format(md_xml)
-     }}
+    %IdpData{
+      idp_data
+      | entity_id: get_entity_id(md_xml),
+        signed_requests: get_req_signed(md_xml),
+        certs: signing_certs,
+        fingerprints: idp_cert_fingerprints(signing_certs),
+        sso_redirect_url: get_sso_redirect_url(md_xml),
+        sso_post_url: get_sso_post_url(md_xml),
+        slo_redirect_url: get_slo_redirect_url(md_xml),
+        slo_post_url: get_slo_post_url(md_xml),
+        nameid_format: get_nameid_format(md_xml)
+    }
   end
 
   # @spec to_esaml_idp_metadata(IdpData.t(), map()) :: :esaml_idp_metadata
@@ -373,12 +361,12 @@ defmodule Samly.IdpData do
     )
   end
 
-  @spec get_entity_id(:xmlElement) :: binary()
+  @spec get_entity_id(SweetXml.xmlElement()) :: binary()
   def get_entity_id(md_elem) do
     md_elem |> xpath(@entity_id_selector |> add_ns()) |> hd() |> String.trim()
   end
 
-  @spec get_nameid_format(:xmlElement) :: nameid_format()
+  @spec get_nameid_format(SweetXml.xmlElement()) :: nameid_format()
   def get_nameid_format(md_elem) do
     case get_data(md_elem, @nameid_format_selector) do
       "" -> :unknown
@@ -386,16 +374,16 @@ defmodule Samly.IdpData do
     end
   end
 
-  @spec get_req_signed(:xmlElement) :: binary()
+  @spec get_req_signed(SweetXml.xmlElement()) :: binary()
   def get_req_signed(md_elem), do: get_data(md_elem, @req_signed_selector)
 
-  @spec get_signing_certs(:xmlElement) :: certs()
+  @spec get_signing_certs(SweetXml.xmlElement()) :: certs()
   def get_signing_certs(md_elem), do: get_certs(md_elem, @signing_keys_selector)
 
-  @spec get_enc_certs(:xmlElement) :: certs()
+  @spec get_enc_certs(SweetXml.xmlElement()) :: certs()
   def get_enc_certs(md_elem), do: get_certs(md_elem, @enc_keys_selector)
 
-  @spec get_certs(:xmlElement, %SweetXpath{}) :: certs()
+  @spec get_certs(SweetXml.xmlElement(), %SweetXpath{}) :: certs()
   defp get_certs(md_elem, key_selector) do
     md_elem
     |> xpath(key_selector |> add_ns())
@@ -410,19 +398,19 @@ defmodule Samly.IdpData do
     end)
   end
 
-  @spec get_sso_redirect_url(:xmlElement) :: url()
+  @spec get_sso_redirect_url(SweetXml.xmlElement()) :: url()
   def get_sso_redirect_url(md_elem), do: get_url(md_elem, @sso_redirect_url_selector)
 
-  @spec get_sso_post_url(:xmlElement) :: url()
+  @spec get_sso_post_url(SweetXml.xmlElement()) :: url()
   def get_sso_post_url(md_elem), do: get_url(md_elem, @sso_post_url_selector)
 
-  @spec get_slo_redirect_url(:xmlElement) :: url()
+  @spec get_slo_redirect_url(SweetXml.xmlElement()) :: url()
   def get_slo_redirect_url(md_elem), do: get_url(md_elem, @slo_redirect_url_selector)
 
-  @spec get_slo_post_url(:xmlElement) :: url()
+  @spec get_slo_post_url(SweetXml.xmlElement()) :: url()
   def get_slo_post_url(md_elem), do: get_url(md_elem, @slo_post_url_selector)
 
-  @spec get_url(:xmlElement, %SweetXpath{}) :: url()
+  @spec get_url(SweetXml.xmlElement(), %SweetXpath{}) :: url()
   defp get_url(md_elem, selector) do
     case get_data(md_elem, selector) do
       "" -> nil
@@ -430,7 +418,7 @@ defmodule Samly.IdpData do
     end
   end
 
-  @spec get_data(:xmlElement, %SweetXpath{}) :: binary()
+  @spec get_data(SweetXml.xmlElement(), %SweetXpath{}) :: binary()
   def get_data(md_elem, selector) do
     md_elem |> xpath(selector |> add_ns()) |> String.trim()
   end

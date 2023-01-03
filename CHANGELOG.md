@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### v1.3.0
++   Added dialyzer checks
++   Changed internal function layout to report errors more granularly
++   Verified with updates to esaml dependency
++   Client can refresh the runtime provider config without restarting the app from [bernardd](https://github.com/dropbox/samly/pull/7)
+
 ### v1.2.0
 +   Metadata can be specified directly in the IdP config rather than requiring a file
 +   Bumps dependencies
