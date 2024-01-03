@@ -56,6 +56,7 @@ defmodule Samly.Provider do
       end
 
     Application.put_env(:samly, :idp_id_from, idp_id_from)
+    :esaml_util.start_ets()
 
     refresh_providers()
   end
