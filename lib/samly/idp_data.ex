@@ -177,7 +177,7 @@ defmodule Samly.IdpData do
   @spec verify_slo_url(%IdpData{}) :: %IdpData{}
   defp verify_slo_url(%IdpData{} = idp_data) do
     if idp_data.valid? && idp_data.slo_redirect_url == nil && idp_data.slo_post_url == nil do
-      Logger.warn("[Samly] SLO Endpoint missing in [#{inspect(idp_data.metadata_file)}]")
+      Logger.warning("[Samly] SLO Endpoint missing in [#{inspect(idp_data.metadata_file)}]")
     end
 
     idp_data
@@ -221,22 +221,22 @@ defmodule Samly.IdpData do
           to_charlist(format)
 
         :email ->
-          'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
+          ~c"urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
 
         :x509 ->
-          'urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName'
+          ~c"urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName"
 
         :windows ->
-          'urn:oasis:names:tc:SAML:1.1:nameid-format:WindowsDomainQualifiedName'
+          ~c"urn:oasis:names:tc:SAML:1.1:nameid-format:WindowsDomainQualifiedName"
 
         :krb ->
-          'urn:oasis:names:tc:SAML:2.0:nameid-format:kerberos'
+          ~c"urn:oasis:names:tc:SAML:2.0:nameid-format:kerberos"
 
         :persistent ->
-          'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
+          ~c"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
 
         :transient ->
-          'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+          ~c"urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
 
         invalid_nameid_format ->
           Logger.error(
