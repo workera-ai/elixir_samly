@@ -1,6 +1,11 @@
 # CHANGELOG
 
 ### v1.3.0
++   remove uri double encoding thanks to @DiaanEngelbrecht
++   fix esaml initialization thanks to @bopm
++   check and enforce session expiration thanks to @idyll
+
+### v1.3.0
 +   Added dialyzer checks
 +   Changed internal function layout to report errors more granularly
 +   Verified with updates to esaml dependency
