@@ -1,9 +1,9 @@
 # CHANGELOG
 
-### v1.3.0
+### v1.4.0
 +   remove uri double encoding thanks to @DiaanEngelbrecht
 +   fix esaml initialization thanks to @bopm
-+   check and enforce session expiration thanks to @idyll
++   check and enforce session expiration (CVE-2024-25718) thanks to @idyll
 
 ### v1.3.0
 +   Added dialyzer checks

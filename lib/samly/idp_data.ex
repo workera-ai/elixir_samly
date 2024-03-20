@@ -23,6 +23,7 @@ defmodule Samly.IdpData do
             signed_envelopes_in_resp: true,
             allow_idp_initiated_flow: false,
             allowed_target_urls: [],
+            debug_mode: false,
             entity_id: "",
             signed_requests: "",
             certs: [],
@@ -50,6 +51,7 @@ defmodule Samly.IdpData do
           signed_envelopes_in_resp: boolean(),
           allow_idp_initiated_flow: boolean(),
           allowed_target_urls: nil | [binary()],
+          debug_mode: boolean(),
           entity_id: binary(),
           signed_requests: binary(),
           certs: certs(),
@@ -120,6 +122,7 @@ defmodule Samly.IdpData do
     |> set_boolean_attr(opts_map, :signed_assertion_in_resp)
     |> set_boolean_attr(opts_map, :signed_envelopes_in_resp)
     |> set_boolean_attr(opts_map, :allow_idp_initiated_flow)
+    |> set_boolean_attr(opts_map, :debug_mode)
   end
 
   @spec load_metadata(%IdpData{}) :: %IdpData{}
