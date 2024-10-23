@@ -1,9 +1,9 @@
 defmodule Samly.Mixfile do
   use Mix.Project
 
-  @version "1.4.0"
+  @version "1.5.0"
   @description "SAML Single-Sign-On Authentication for Plug/Phoenix Applications"
-  @source_url "https://github.com/dropbox/samly"
+  @source_url "https://github.com/workera-ai/elixir_samly/tree/main"
 
   def project() do
     [
@@ -12,7 +12,7 @@ defmodule Samly.Mixfile do
       description: @description,
       docs: docs(),
       package: package(),
-      elixir: "~> 1.10",
+      elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
