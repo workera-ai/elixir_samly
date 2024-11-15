@@ -4,11 +4,10 @@ defmodule Samly.StateUtilTest do
   use ExUnit.Case, async: true
   use Plug.Test
 
-  alias Samly.Assertion
   alias Samly.State.StateUtil
 
-  describe "validate_assertion_expiry/2" do
-    test "returns nil when assertion is expired for login request" do
+  describe "validate_login_assertion_expiry/1" do
+    test "is :expired when assertion is expired" do
       # Arrange
       not_on_or_after = DateTime.utc_now() |> DateTime.add(-8, :hour) |> DateTime.to_iso8601()
 
@@ -21,13 +20,13 @@ defmodule Samly.StateUtilTest do
       }
 
       # Act
-      result = StateUtil.validate_assertion_expiry(assertion, :login)
+      result = StateUtil.validate_login_assertion_expiry(assertion)
 
       # Assert
-      assert result == nil
+      assert result == :expired
     end
 
-    test "returns assertion when assertion has not expired for login request" do
+    test "is :valid when assertion has not expired for" do
       # Arrange
       not_on_or_after = DateTime.utc_now() |> DateTime.add(8, :hour) |> DateTime.to_iso8601()
 
@@ -40,13 +39,15 @@ defmodule Samly.StateUtilTest do
       }
 
       # Act
-      result = StateUtil.validate_assertion_expiry(assertion, :login)
+      result = StateUtil.validate_login_assertion_expiry(assertion)
 
       # Assert
-      assert result == assertion
+      assert result == :valid
     end
+  end
 
-    test "returns nil when assertion is expired for logout request" do
+  describe "validate_logout_assertion_expiry/1" do
+    test "is :expired when assertion is expired" do
       # Arrange
       not_on_or_after = DateTime.utc_now() |> DateTime.add(8, :hour) |> DateTime.to_iso8601()
 
@@ -59,15 +60,15 @@ defmodule Samly.StateUtilTest do
       }
 
       # Act
-      result = StateUtil.validate_assertion_expiry(assertion, :logout)
+      result = StateUtil.validate_logout_assertion_expiry(assertion)
 
       # Assert
-      assert result == nil
+      assert result == :expired
     end
 
-    test "returns assertion when assertion has not expired for logout request" do
+    test "is :valid when assertion has not expired" do
       # Arrange
-      not_on_or_after = DateTime.utc_now() |> DateTime.add(8, :hour) |> DateTime.to_iso8601()
+      not_on_or_after = DateTime.utc_now() |> DateTime.add(-8, :hour) |> DateTime.to_iso8601()
 
       session_not_on_or_after =
         DateTime.utc_now() |> DateTime.add(8, :hour) |> DateTime.to_iso8601()
@@ -78,13 +79,13 @@ defmodule Samly.StateUtilTest do
       }
 
       # Act
-      result = StateUtil.validate_assertion_expiry(assertion, :logout)
+      result = StateUtil.validate_logout_assertion_expiry(assertion)
 
       # Assert
-      assert result == assertion
+      assert result == :valid
     end
 
-    test "returns nil when session_not_on_or_after is not available but assertion subject has also expired for logout request" do
+    test "is :expired when session_not_on_or_after is missing and assertion subject has also expired" do
       # Arrange
       not_on_or_after = DateTime.utc_now() |> DateTime.add(-8, :hour) |> DateTime.to_iso8601()
 
@@ -94,13 +95,13 @@ defmodule Samly.StateUtilTest do
       }
 
       # Act
-      result = StateUtil.validate_assertion_expiry(assertion, :logout)
+      result = StateUtil.validate_logout_assertion_expiry(assertion)
 
       # Assert
-      assert result == nil
+      assert result == :expired
     end
 
-    test "returns assertion when session_not_on_or_after is not available but assertion subject has not expired for logout request" do
+    test "is :valid when session_not_on_or_after is missing but assertion subject has not expired" do
       # Arrange
       not_on_or_after = DateTime.utc_now() |> DateTime.add(8, :hour) |> DateTime.to_iso8601()
 
@@ -110,10 +111,10 @@ defmodule Samly.StateUtilTest do
       }
 
       # Act
-      result = StateUtil.validate_assertion_expiry(assertion, :logout)
+      result = StateUtil.validate_logout_assertion_expiry(assertion)
 
       # Assert
-      assert result == assertion
+      assert result == :valid
     end
   end
 end

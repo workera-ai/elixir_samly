@@ -3,6 +3,7 @@ defmodule Samly do
   Elixir library used to enable SAML SP SSO to a Phoenix/Plug based application.
   """
 
+  alias Samly.State.StateUtil
   alias Plug.Conn
   alias Samly.{Assertion, State}
 
@@ -24,12 +25,12 @@ defmodule Samly do
   """
   @spec get_active_assertion(Conn.t()) :: nil | Assertion.t()
   def get_active_assertion(conn) do
-    case Conn.get_session(conn, "samly_assertion_key") do
-      {_idp_id, _nameid} = assertion_key ->
-        State.get_assertion(conn, assertion_key)
-
-      _ ->
-        nil
+    with {_idp_id, _nameid} = assertion_key <- Conn.get_session(conn, "samly_assertion_key"),
+         %Assertion{} = assertion <- State.get_assertion(conn, assertion_key),
+         :valid <- StateUtil.validate_login_assertion_expiry(assertion) do
+      assertion
+    else
+      _ -> nil
     end
   end
 

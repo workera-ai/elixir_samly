@@ -1,13 +1,15 @@
 defmodule Samly.SPHandler do
   @moduledoc false
 
-  require Logger
   import Plug.Conn
+  import Samly.RouterUtil, only: [ensure_sp_uris_set: 2, send_saml_request: 5, redirect: 3]
+
+  alias Samly.State.StateUtil
   alias Plug.Conn
-  require Samly.Esaml
   alias Samly.{Assertion, Esaml, Helper, IdpData, State, Subject}
 
-  import Samly.RouterUtil, only: [ensure_sp_uris_set: 2, send_saml_request: 5, redirect: 3]
+  require Logger
+  require Samly.Esaml
 
   def send_metadata(conn) do
     %IdpData{} = idp = conn.private[:samly_idp]
@@ -191,11 +193,12 @@ defmodule Samly.SPHandler do
       assertion_key = {idp_id, nameid}
 
       {conn, return_status} =
-        case State.get_assertion(conn, assertion_key) do
-          %Assertion{idp_id: ^idp_id, subject: %Subject{name: ^nameid}} ->
-            conn = State.delete_assertion(conn, assertion_key)
-            {conn, :success}
-
+        with %Assertion{idp_id: ^idp_id, subject: %Subject{name: ^nameid}} = assertion <-
+               State.get_assertion(conn, assertion_key),
+             :valid <- StateUtil.validate_logout_assertion_expiry(assertion) do
+          conn = State.delete_assertion(conn, assertion_key)
+          {conn, :success}
+        else
           _ ->
             {conn, :denied}
         end
