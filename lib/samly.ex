@@ -8,7 +8,7 @@ defmodule Samly do
   alias Samly.{Assertion, State}
 
   @doc """
-  Returns authenticated user SAML Assertion.
+  Returns authenticated user SAML Assertion which is not expired.
 
   The struct includes the attributes sent from IdP as well as any corresponding locally
   computed/derived attributes. Returns `nil` if the current Plug session
@@ -25,12 +25,38 @@ defmodule Samly do
   """
   @spec get_active_assertion(Conn.t()) :: nil | Assertion.t()
   def get_active_assertion(conn) do
-    with {_idp_id, _nameid} = assertion_key <- Conn.get_session(conn, "samly_assertion_key"),
-         %Assertion{} = assertion <- State.get_assertion(conn, assertion_key),
+    with %Assertion{} = assertion <- get_assertion(conn),
          :valid <- StateUtil.validate_login_assertion_expiry(assertion) do
       assertion
     else
       _ -> nil
+    end
+  end
+
+  @doc """
+  Returns authenticated user SAML Assertion, no matter if it's expired or not.
+
+  The struct includes the attributes sent from IdP as well as any corresponding locally
+  computed/derived attributes. Returns `nil` if the current Plug session
+  is not authenticated.
+
+  ## Parameters
+
+  +   `conn` - Plug connection
+
+  ## Examples
+
+      # When there is an authenticated SAML assertion
+      %Assertion{} = Samly.get_active_assertion()
+  """
+  @spec get_assertion(Conn.t()) :: nil | Assertion.t()
+  def get_assertion(conn) do
+    case Conn.get_session(conn, "samly_assertion_key") do
+      {_idp_id, _nameid} = assertion_key ->
+        State.get_assertion(conn, assertion_key)
+
+      _ ->
+        nil
     end
   end
 
