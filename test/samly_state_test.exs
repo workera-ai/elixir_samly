@@ -2,6 +2,8 @@ defmodule Samly.StateTest do
   use ExUnit.Case, async: true
   use Plug.Test
 
+  alias Samly.State.StateUtil
+
   describe "With Session Cache" do
     setup do
       opts =
@@ -39,10 +41,19 @@ defmodule Samly.StateTest do
     end
 
     test "get failure for expired assertion key", %{conn: conn} do
+      # Arrange
       assertion = %Samly.Assertion{}
       assertion_key = {"idp1", "name1"}
-      conn = Samly.State.put_assertion(conn, assertion_key, assertion)
-      assert is_nil(Samly.State.get_assertion(conn, {"idp1", "name1"}))
+
+      # Act
+      result =
+        conn
+        |> Samly.State.put_assertion(assertion_key, assertion)
+        |> Samly.State.get_assertion(assertion_key)
+        |> StateUtil.validate_login_assertion_expiry()
+
+      # Assert
+      assert result == :expired
     end
 
     test "delete assertion", %{conn: conn} do
@@ -78,10 +89,19 @@ defmodule Samly.StateTest do
     end
 
     test "get failure for expired assertion key", %{conn: conn} do
+      # Arrange
       assertion = %Samly.Assertion{}
       assertion_key = {"idp1", "name1"}
-      conn = Samly.State.put_assertion(conn, assertion_key, assertion)
-      assert is_nil(Samly.State.get_assertion(conn, {"idp1", "name1"}))
+
+      # Act
+      result =
+        conn
+        |> Samly.State.put_assertion(assertion_key, assertion)
+        |> Samly.State.get_assertion(assertion_key)
+        |> StateUtil.validate_login_assertion_expiry()
+
+      # Assert
+      assert result == :expired
     end
 
     test "delete assertion", %{conn: conn} do
