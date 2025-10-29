@@ -32,11 +32,11 @@ defmodule Samly.State.Redis do
           ttl: 60
         ]
 
-  ### Using a custom Redis module (e.g., Workera.Redis with connection pool)
+  ### Using a custom Redis module (e.g., App.Redis with connection pool)
 
       config :samly, Samly.State,
         opts: [
-          redis_module: Workera.Redis,
+          redis_module: App.Redis,
           key_prefix: "samly:assertion:",
           ttl: 60
         ]
@@ -83,6 +83,8 @@ defmodule Samly.State.Redis do
   end
 
   @impl Samly.State.Store
+  def get_assertion(_conn, nil, _opts), do: nil
+
   def get_assertion(_conn, assertion_key, opts) do
     key_prefix = Keyword.fetch!(opts, :key_prefix)
     redis_key = build_redis_key(key_prefix, assertion_key)
@@ -128,6 +130,8 @@ defmodule Samly.State.Redis do
   end
 
   @impl Samly.State.Store
+  def delete_assertion(conn, nil, _opts), do: conn
+
   def delete_assertion(conn, assertion_key, opts) do
     key_prefix = Keyword.fetch!(opts, :key_prefix)
     redis_key = build_redis_key(key_prefix, assertion_key)
@@ -149,7 +153,7 @@ defmodule Samly.State.Redis do
       redis_name = Keyword.fetch!(opts, :redis_name)
       redis_module.command(redis_name, command)
     else
-      # Use custom module (e.g., Workera.Redis) without connection name
+      # Use custom module (e.g., App.Redis) without connection name
       redis_module.command(command)
     end
   end

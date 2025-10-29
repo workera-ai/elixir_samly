@@ -213,5 +213,13 @@ defmodule Samly.StateTest do
       # Should be expired
       assert is_nil(Samly.State.get_assertion(conn, assertion_key))
     end
+
+    test "handles nil assertion_key gracefully", %{conn: conn} do
+      # get_assertion with nil should return nil
+      assert is_nil(Samly.State.get_assertion(conn, nil))
+
+      # delete_assertion with nil should return conn unchanged
+      assert ^conn = Samly.State.delete_assertion(conn, nil)
+    end
   end
 end
