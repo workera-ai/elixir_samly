@@ -96,7 +96,7 @@ defmodule Samly.State.Redis do
       {:ok, binary} when is_binary(binary) ->
         binary
         |> Base.decode64!()
-        |> :erlang.binary_to_term()
+        |> :erlang.binary_to_term(:safe)
 
       {:error, reason} ->
         raise "Failed to get assertion from Redis: #{inspect(reason)}"

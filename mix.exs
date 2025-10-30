@@ -1,7 +1,7 @@
 defmodule Samly.Mixfile do
   use Mix.Project
 
-  @version "1.6.0"
+  @version "1.7.1"
   @description "SAML Single-Sign-On Authentication for Plug/Phoenix Applications"
   @source_url "https://github.com/workera-ai/elixir_samly/tree/main"
 
@@ -48,7 +48,7 @@ defmodule Samly.Mixfile do
 
   defp package() do
     [
-      maintainers: ["dropbox", "KMC"],
+      maintainers: ["dropbox", "KMC", "Workera"],
       files: ["config", "lib", "LICENSE", "mix.exs", "README.md"],
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url}
