@@ -21,3 +21,6 @@ erl_crash.dump
 .sobelow
 /docs/
 /.elixir_ls/
+
+# Ignore the output from Elixir Expert LSP
+.expert
