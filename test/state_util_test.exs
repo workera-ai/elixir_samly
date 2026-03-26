@@ -2,7 +2,6 @@ defmodule Samly.StateUtilTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
-  use Plug.Test
 
   alias Samly.State.StateUtil
 

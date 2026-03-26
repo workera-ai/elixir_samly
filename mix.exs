@@ -1,7 +1,7 @@
 defmodule Samly.Mixfile do
   use Mix.Project
 
-  @version "1.7.2"
+  @version "1.7.3"
   @description "SAML Single-Sign-On Authentication for Plug/Phoenix Applications"
   @source_url "https://github.com/workera-ai/elixir_samly/tree/main"
 
@@ -28,8 +28,9 @@ defmodule Samly.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps() do
     [
-      {:plug, "~> 1.6"},
-      {:esaml, "~> 4.3"},
+      {:plug, "~> 1.19"},
+      {:esaml, ">= 4.3.0",
+       github: "ForwardFinancing/esaml", ref: "2bb856d12e2e0331d9bcbb9a882733d1f089b75f"},
       {:sweet_xml, "~> 0.6"},
       {:redix, "~> 1.1", optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
