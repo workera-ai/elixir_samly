@@ -1,7 +1,7 @@
 defmodule Samly.Mixfile do
   use Mix.Project
 
-  @version "1.7.3"
+  @version "1.7.4"
   @description "SAML Single-Sign-On Authentication for Plug/Phoenix Applications"
   @source_url "https://github.com/workera-ai/elixir_samly/tree/main"
 

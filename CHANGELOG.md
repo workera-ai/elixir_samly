@@ -1,5 +1,12 @@
 # CHANGELOG
 
+### v1.7.4
++   Update dependencies to their latest versions
++   `plug` 1.19.1 -> 1.20.3, which includes the fixes for CVE-2026-56813 (`;` in cookie attributes) and CVE-2026-56814 (multipart length limit)
++   `redix` 1.5.3 -> 1.9.2, which verifies SSL server hostnames per RFC 6125 by default (accepts the wildcard certificates used by AWS ElastiCache)
++   Transitive bumps: `cowboy` 2.19.0, `cowlib` 2.20.0, `ranch` 2.3.0, `plug_crypto` 2.2.0, `telemetry` 1.4.2
++   Dev-only bumps: `dialyxir` 1.4.8, `ex_doc` 0.40.4
+
 ### v1.7.3
 +   Switch `esaml` dependency from Hex to [ForwardFinancing](https://github.com/ForwardFinancing/esaml) fork to include XXE vulnerability fix (CVE-2026-XXE)
 +   Disables XML entity expansion in all `xmerl_scan:string/2` call sites via `{allow_entities, false}`
