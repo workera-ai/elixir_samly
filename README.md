@@ -1,3 +1,12 @@
+> [!WARNING]
+> **This fork is unmaintained.**
+>
+> It is kept alive only for existing internal consumers and receives no new
+> features. Its `esaml` backend is unmaintained upstream as well.
+>
+> For new projects, and for migrating existing ones, we recommend the more
+> actively maintained [`ex_saml`](https://github.com/docJerem/ex_saml) project.
+
 # Samly
 
 A SAML 2.0 Service Provider Single-Sign-On Authentication library. This Plug library can be used to SAML enable a Plug/Phoenix application.
